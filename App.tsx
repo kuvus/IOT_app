@@ -7,6 +7,7 @@ import LoginScreen from './src/screens/LoginScreen'
 import SignupScreen from './src/screens/SignupScreen'
 import theme from './src/theme'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
+import ConnectScreen from './src/screens/ConnectScreen'
 
 const Stack = createNativeStackNavigator()
 
@@ -23,21 +24,26 @@ function App() {
             <NavigationContainer>
                 <Stack.Navigator>
                     <Stack.Screen
-                        name='Welcome'
+                        name="Welcome"
                         component={WelcomeScreen}
                         options={{ headerShown: false }}
                     />
                     <Stack.Screen
-                        name='Login'
+                        name="Login"
                         component={LoginScreen}
                         options={{ title: 'Zaloguj się' }}
                     />
                     <Stack.Screen
-                        name='Signup'
+                        name="Signup"
                         component={SignupScreen}
                         options={{ title: 'Zarejestruj się' }}
                     />
-                    <Stack.Screen name='Tabs' component={TabNavigator} />
+                    <Stack.Screen
+                        name="Connect"
+                        component={ConnectScreen}
+                        options={{ title: 'Połącz z urządzeniem' }}
+                    />
+                    <Stack.Screen name="Tabs" component={TabNavigator} />
                 </Stack.Navigator>
             </NavigationContainer>
         </PaperProvider>
