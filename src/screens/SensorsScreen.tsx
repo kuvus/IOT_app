@@ -94,11 +94,11 @@ export default function SensorsScreen({}: Props) {
     return (
         <SafeAreaView
             style={{
-                marginHorizontal: 10,
+                padding: 16,
             }}>
             <ScrollView style={{}} contentContainerStyle={{ rowGap: 8 }}>
                 {mockData.map(sensor => (
-                    <SensorListing sensor={sensor} />
+                    <SensorListing sensor={sensor} key={sensor.id} />
                 ))}
             </ScrollView>
         </SafeAreaView>

@@ -6,19 +6,15 @@ const theme = {
     colors: {
         ...MD3LightTheme.colors,
         primary: '#24A3FF',
+        primaryContainer: '#FFFFFF',
+        onPrimary: '#ffffff',
         accent: '#FFC107',
         secondary: '#212121',
-        background: '#F5F5F5',
+        secondaryContainer: '#c8e5ff',
         surface: '#FFFFFF',
         error: '#B00020',
         text: '#000000',
         textLight: '#FFFFFF',
-        onBackground: '#000000',
-        onSurface: '#000000',
-        disabled: '#000000',
-        placeholder: '#000000',
-        backdrop: '#000000',
-        notification: '#000000',
     },
 }
 export default theme

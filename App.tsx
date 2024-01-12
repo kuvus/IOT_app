@@ -8,6 +8,7 @@ import SignupScreen from './src/screens/SignupScreen'
 import theme from './src/theme'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import ConnectScreen from './src/screens/ConnectScreen'
+import WifiScreen from './src/screens/WifiScreen'
 
 const Stack = createNativeStackNavigator()
 
@@ -24,26 +25,38 @@ function App() {
             <NavigationContainer>
                 <Stack.Navigator>
                     <Stack.Screen
-                        name="Welcome"
+                        name='Welcome'
                         component={WelcomeScreen}
                         options={{ headerShown: false }}
                     />
                     <Stack.Screen
-                        name="Login"
+                        name='Login'
                         component={LoginScreen}
                         options={{ title: 'Zaloguj się' }}
                     />
                     <Stack.Screen
-                        name="Signup"
+                        name='Signup'
                         component={SignupScreen}
                         options={{ title: 'Zarejestruj się' }}
                     />
                     <Stack.Screen
-                        name="Connect"
+                        name='Connect'
                         component={ConnectScreen}
                         options={{ title: 'Połącz z urządzeniem' }}
                     />
-                    <Stack.Screen name="Tabs" component={TabNavigator} />
+                    <Stack.Screen
+                        name='Wifi'
+                        component={WifiScreen}
+                        options={{ title: 'Wybierz sieć WiFi' }}
+                    />
+                    <Stack.Screen
+                        name='Tabs'
+                        component={TabNavigator}
+                        options={{
+                            headerBackVisible: false,
+                            headerShown: false,
+                        }}
+                    />
                 </Stack.Navigator>
             </NavigationContainer>
         </PaperProvider>
