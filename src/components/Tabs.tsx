@@ -3,15 +3,13 @@ import WelcomeScreen from '../screens/WelcomeScreen'
 import SensorsScreen from '../screens/SensorsScreen'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import ConnectScreen from '../screens/ConnectScreen'
+import ProfileScreen from '../screens/ProfileScreen'
 
 const Tab = createMaterialBottomTabNavigator()
 
 function Tabs() {
     return (
-        <Tab.Navigator
-            barStyle={{
-                backgroundColor: '#f3f8ff',
-            }}>
+        <Tab.Navigator>
             <Tab.Screen
                 name='Sensors'
                 component={SensorsScreen}
@@ -33,6 +31,19 @@ function Tabs() {
                     tabBarIcon: ({ color }) => (
                         <MaterialCommunityIcons
                             name='plus'
+                            color={color}
+                            size={26}
+                        />
+                    ),
+                }}
+            />
+            <Tab.Screen
+                name='Profil'
+                component={ProfileScreen}
+                options={{
+                    tabBarIcon: ({ color }) => (
+                        <MaterialCommunityIcons
+                            name='account'
                             color={color}
                             size={26}
                         />

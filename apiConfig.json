@@ -1,0 +1,5 @@
+{
+    "apiUrl": "https://iot-api-v2.azurewebsites.net/api/v1/",
+    "accessTokenKey": "iot_at",
+    "refreshTokenKey": "iot_rt"
+}

@@ -1,9 +1,9 @@
-import { View } from 'react-native'
+import { View, StyleSheet } from 'react-native'
 
 import { useNetInfo } from '@react-native-community/netinfo'
 import { useEffect, useState } from 'react'
 import * as Location from 'expo-location'
-import { Button, Dialog, Portal, Text } from 'react-native-paper'
+import { Appbar, Button, Dialog, Portal, Text } from 'react-native-paper'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { StackParamList } from '../../App'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -22,24 +22,7 @@ export default function ConnectScreen({ navigation }: Props) {
     }, [type, details])
 
     return (
-        <SafeAreaView
-            style={{
-                padding: 16,
-                rowGap: 8,
-            }}>
-            <Text style={{ fontSize: 20, textAlign: 'center' }}>
-                Połącz się z siecią urządzenia, aby rozpocząć konfigurację.
-            </Text>
-            <View style={{ marginTop: 16 }}>
-                <Text style={{ fontSize: 18 }}>Nazwa sieci: czujnik1</Text>
-                <Text>Po połączeniu przejdź do kolejnego kroku.</Text>
-            </View>
-            <Button
-                onPress={() => navigation.navigate('Wifi')}
-                mode='contained'>
-                Dalej
-            </Button>
-
+        <View style={{ flex: 1 }}>
             <Portal>
                 <Dialog
                     visible={showDialog}
@@ -63,6 +46,42 @@ export default function ConnectScreen({ navigation }: Props) {
                     </Dialog.Actions>
                 </Dialog>
             </Portal>
-        </SafeAreaView>
+
+            <Appbar.Header elevated={true} mode={'center-aligned'}>
+                <Appbar.Content title='Dodaj czujnik' />
+            </Appbar.Header>
+            <View
+                style={{
+                    padding: 16,
+                    rowGap: 8,
+                    justifyContent: 'space-around',
+                    flexDirection: 'column',
+                    flex: 1,
+                }}>
+                <View style={{ gap: 32 }}>
+                    <Text
+                        style={{ textAlign: 'center' }}
+                        variant={'titleLarge'}>
+                        Połącz się z siecią urządzenia, aby rozpocząć
+                        konfigurację.
+                    </Text>
+                    <View>
+                        <Text
+                            style={{ textAlign: 'center' }}
+                            variant={'titleMedium'}>
+                            Nazwa sieci: czujnik1
+                        </Text>
+                        <Text style={{ textAlign: 'center' }}>
+                            Po połączeniu przejdź do kolejnego kroku.
+                        </Text>
+                    </View>
+                </View>
+                <Button
+                    onPress={() => navigation.navigate('Wifi')}
+                    mode='contained'>
+                    Dalej
+                </Button>
+            </View>
+        </View>
     )
 }

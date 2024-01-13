@@ -1,3 +1,4 @@
+import { createContext, useContext } from 'react'
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { PaperProvider } from 'react-native-paper'
@@ -9,6 +10,8 @@ import theme from './src/theme'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import ConnectScreen from './src/screens/ConnectScreen'
 import WifiScreen from './src/screens/WifiScreen'
+import { AuthProvider, useAuth } from './src/providers/AuthProvider'
+import { SafeAreaProvider } from 'react-native-safe-area-context'
 
 const Stack = createNativeStackNavigator()
 
@@ -17,49 +20,75 @@ export type StackParamList = {
     Login: undefined
     Signup: undefined
     Tabs: undefined
+    Wifi: undefined
+}
+
+const Navigation = () => {
+    const { authState } = useAuth()
+
+    return (
+        <NavigationContainer>
+            <Stack.Navigator>
+                {authState?.authenticated ? (
+                    <>
+                        <Stack.Screen
+                            name='Tabs'
+                            component={TabNavigator}
+                            options={{
+                                headerBackVisible: false,
+                                headerShown: false,
+                            }}
+                        />
+                        <Stack.Screen
+                            name='Connect'
+                            component={ConnectScreen}
+                            options={{
+                                title: 'Połącz z urządzeniem',
+                                headerShown: false,
+                            }}
+                        />
+                        <Stack.Screen
+                            name='Wifi'
+                            component={WifiScreen}
+                            options={{
+                                title: 'Wybierz sieć WiFi',
+                                headerShown: false,
+                            }}
+                        />
+                    </>
+                ) : (
+                    <>
+                        <Stack.Screen
+                            name='Welcome'
+                            component={WelcomeScreen}
+                            options={{ headerShown: false }}
+                        />
+                        <Stack.Screen
+                            name='Login'
+                            component={LoginScreen}
+                            options={{ title: 'Zaloguj się' }}
+                        />
+                        <Stack.Screen
+                            name='Signup'
+                            component={SignupScreen}
+                            options={{ title: 'Zarejestruj się' }}
+                        />
+                    </>
+                )}
+            </Stack.Navigator>
+        </NavigationContainer>
+    )
 }
 
 function App() {
     return (
-        <PaperProvider theme={theme}>
-            <NavigationContainer>
-                <Stack.Navigator>
-                    <Stack.Screen
-                        name='Welcome'
-                        component={WelcomeScreen}
-                        options={{ headerShown: false }}
-                    />
-                    <Stack.Screen
-                        name='Login'
-                        component={LoginScreen}
-                        options={{ title: 'Zaloguj się' }}
-                    />
-                    <Stack.Screen
-                        name='Signup'
-                        component={SignupScreen}
-                        options={{ title: 'Zarejestruj się' }}
-                    />
-                    <Stack.Screen
-                        name='Connect'
-                        component={ConnectScreen}
-                        options={{ title: 'Połącz z urządzeniem' }}
-                    />
-                    <Stack.Screen
-                        name='Wifi'
-                        component={WifiScreen}
-                        options={{ title: 'Wybierz sieć WiFi' }}
-                    />
-                    <Stack.Screen
-                        name='Tabs'
-                        component={TabNavigator}
-                        options={{
-                            headerBackVisible: false,
-                            headerShown: false,
-                        }}
-                    />
-                </Stack.Navigator>
-            </NavigationContainer>
-        </PaperProvider>
+        <AuthProvider>
+            <SafeAreaProvider>
+                <PaperProvider theme={theme}>
+                    <Navigation />
+                </PaperProvider>
+            </SafeAreaProvider>
+        </AuthProvider>
     )
 }
 
