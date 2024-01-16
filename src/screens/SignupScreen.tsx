@@ -8,7 +8,7 @@ import Spinner from 'react-native-loading-spinner-overlay'
 
 type Props = NativeStackScreenProps<StackParamList>
 
-export default function SignupScreen({}: Props) {
+export default function SignupScreen({ navigation }: Props) {
     const [username, setUsername] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -28,7 +28,9 @@ export default function SignupScreen({}: Props) {
                     setError(result.message.response.data.detail)
                 } else
                     setError('Wystąpił błąd serwera, spróbuj ponownie później')
-            } else console.log(result.data)
+            } else {
+                navigation.navigate('Login')
+            }
         }
 
         console.log('b')
