@@ -25,7 +25,7 @@ export default function WifiScreen({ navigation }: Props) {
             </Appbar.Header>
             <View style={{ padding: 16, rowGap: 24 }}>
                 <Text style={{ textAlign: 'center', fontSize: 18 }}>
-                    Podaj dane sieci, z którą będzie się łączył czujnik.
+                    Podaj dane sieci, z którą będzie się łączyło urządzenie.
                 </Text>
                 <View style={{ rowGap: 4 }}>
                     <TextInput

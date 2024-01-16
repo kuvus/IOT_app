@@ -29,11 +29,11 @@ export default function ConnectScreen({ navigation }: Props) {
                     onDismiss={() => {
                         setShowDialog(false)
                     }}>
-                    <Dialog.Title>Połączenie z czujnikiem</Dialog.Title>
+                    <Dialog.Title>Połączenie z urządzeniem</Dialog.Title>
                     <Dialog.Content>
                         <Text variant='bodyMedium'>
-                            Aby kontynuować konfigurację czujnika, włącz WIFI i
-                            połącz się z siecią czujnika.
+                            Aby kontynuować konfigurację urządzenia, włącz WIFI
+                            i połącz się z siecią urządzenia.
                         </Text>
                     </Dialog.Content>
                     <Dialog.Actions>

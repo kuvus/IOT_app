@@ -56,6 +56,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                     refreshToken: refreshToken,
                     authenticated: true,
                 })
+                axios.defaults.headers.common['Authorization'] =
+                    `Bearer ${accessToken}`
             }
         }
         loadTokens()
@@ -170,6 +172,28 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             console.log(error)
         }
     }
+
+    // TODO: sprawdzić czy działa
+    axios.interceptors.response.use(
+        response => {
+            return response
+        },
+        async error => {
+            const originalRequest = error.config
+            const errMessage = error.response.data.detail as string
+            if (
+                errMessage.includes('Not authenticated') &&
+                !originalRequest._retry
+            ) {
+                originalRequest._retry = true
+
+                await onRefreshToken()
+
+                return axios(originalRequest)
+            }
+            return Promise.reject(error)
+        }
+    )
 
     const value = {
         authState,

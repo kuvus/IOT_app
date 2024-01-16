@@ -12,8 +12,10 @@ import ConnectScreen from './src/screens/ConnectScreen'
 import WifiScreen from './src/screens/WifiScreen'
 import { AuthProvider, useAuth } from './src/providers/AuthProvider'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
+import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
+import { Device } from './src/models/device.type'
 
-const Stack = createNativeStackNavigator()
+const queryClient = new QueryClient()
 
 export type StackParamList = {
     Welcome: undefined
@@ -21,7 +23,11 @@ export type StackParamList = {
     Signup: undefined
     Tabs: undefined
     Wifi: undefined
+    Connect: undefined
+    Sensor: { device: Device } | undefined
 }
+
+const Stack = createNativeStackNavigator<StackParamList>()
 
 const Navigation = () => {
     const { authState } = useAuth()
@@ -83,11 +89,13 @@ const Navigation = () => {
 function App() {
     return (
         <AuthProvider>
-            <SafeAreaProvider>
-                <PaperProvider theme={theme}>
-                    <Navigation />
-                </PaperProvider>
-            </SafeAreaProvider>
+            <QueryClientProvider client={queryClient}>
+                <SafeAreaProvider>
+                    <PaperProvider theme={theme}>
+                        <Navigation />
+                    </PaperProvider>
+                </SafeAreaProvider>
+            </QueryClientProvider>
         </AuthProvider>
     )
 }

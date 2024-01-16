@@ -1,6 +1,6 @@
 import { createMaterialBottomTabNavigator } from 'react-native-paper/react-navigation'
 import WelcomeScreen from '../screens/WelcomeScreen'
-import SensorsScreen from '../screens/SensorsScreen'
+import DevicesScreen from '../screens/DevicesScreen'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import ConnectScreen from '../screens/ConnectScreen'
 import ProfileScreen from '../screens/ProfileScreen'
@@ -12,7 +12,7 @@ function Tabs() {
         <Tab.Navigator>
             <Tab.Screen
                 name='Sensors'
-                component={SensorsScreen}
+                component={DevicesScreen}
                 options={{
                     tabBarIcon: ({ color }) => (
                         <MaterialCommunityIcons
@@ -21,11 +21,11 @@ function Tabs() {
                             size={26}
                         />
                     ),
-                    title: 'Czujniki',
+                    title: 'Urządzenia',
                 }}
             />
             <Tab.Screen
-                name={'Dodaj czujnik'}
+                name={'Dodaj urządzenie'}
                 component={ConnectScreen}
                 options={{
                     tabBarIcon: ({ color }) => (
