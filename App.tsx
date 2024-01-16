@@ -14,6 +14,7 @@ import { AuthProvider, useAuth } from './src/providers/AuthProvider'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
 import { Device } from './src/models/device.type'
+import SensorScreen from './src/screens/SensorScreen'
 
 const queryClient = new QueryClient()
 
@@ -24,6 +25,7 @@ export type StackParamList = {
     Tabs: undefined
     Wifi: undefined
     Connect: undefined
+    Devices: undefined
     Sensor: { device: Device } | undefined
 }
 
@@ -56,6 +58,14 @@ const Navigation = () => {
                         <Stack.Screen
                             name='Wifi'
                             component={WifiScreen}
+                            options={{
+                                title: 'Wybierz sieć WiFi',
+                                headerShown: false,
+                            }}
+                        />
+                        <Stack.Screen
+                            name='Sensor'
+                            component={SensorScreen}
                             options={{
                                 title: 'Wybierz sieć WiFi',
                                 headerShown: false,

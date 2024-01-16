@@ -1,4 +1,10 @@
-import { FlatList, RefreshControl, ScrollView, View } from 'react-native'
+import {
+    FlatList,
+    RefreshControl,
+    ScrollView,
+    TouchableHighlight,
+    View,
+} from 'react-native'
 import SensorListing from '../components/SensorListing'
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Appbar, Text } from 'react-native-paper'
@@ -14,7 +20,7 @@ import { Device } from '../models/device.type'
 
 type Props = NativeStackScreenProps<StackParamList>
 
-export default function DevicesScreen({}: Props) {
+export default function DevicesScreen({ navigation }: Props) {
     const [refreshing, setRefreshing] = useState(false)
 
     const { isLoading, data, isError, isFetching, refetch } = useQuery({
@@ -84,8 +90,17 @@ export default function DevicesScreen({}: Props) {
                         data={data?.data}
                         renderItem={({ item }) => {
                             console.log(item)
-                            return <Text>{item.name}</Text>
-                            // <SensorListing sensor={item} />
+                            // return <Text>{item.name}</Text>
+                            return (
+                                <TouchableHighlight
+                                    onPress={() =>
+                                        navigation.navigate('Sensor', {
+                                            device: item,
+                                        })
+                                    }>
+                                    <SensorListing sensor={item} />
+                                </TouchableHighlight>
+                            )
                         }}
                         keyExtractor={item => item.id.toString()}
                         contentContainerStyle={{
