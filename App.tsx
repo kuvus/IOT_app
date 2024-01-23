@@ -1,4 +1,5 @@
-import { createContext, useContext } from 'react'
+global.Buffer = require('buffer').Buffer
+import { createContext, useContext, useEffect } from 'react'
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { PaperProvider } from 'react-native-paper'
@@ -15,6 +16,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
 import { Device } from './src/models/device.type'
 import SensorScreen from './src/screens/SensorScreen'
+import { PermissionsAndroid, Platform } from 'react-native'
+import { BluetoothConnectionProvider } from './src/providers/BluetoothProvider'
 
 const queryClient = new QueryClient()
 
@@ -33,6 +36,84 @@ const Stack = createNativeStackNavigator<StackParamList>()
 
 const Navigation = () => {
     const { authState } = useAuth()
+
+    useEffect(() => {
+        // BleManager.enableBluetooth().then(() => {
+        //     console.log('Bluetooth is turned on!')
+        // })
+
+        if (Platform.OS === 'android' && Platform.Version >= 23) {
+            PermissionsAndroid.check(
+                PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+            ).then(result => {
+                if (result) {
+                    console.log('Permission is OK')
+                } else {
+                    PermissionsAndroid.request(
+                        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+                    ).then(result => {
+                        if (result) {
+                            console.log('User accept')
+                        } else {
+                            console.log('User refuse')
+                        }
+                    })
+                }
+            })
+
+            PermissionsAndroid.check(
+                PermissionsAndroid.PERMISSIONS.NEARBY_WIFI_DEVICES
+            ).then(result => {
+                if (result) {
+                    console.log('Permission is OK')
+                } else {
+                    PermissionsAndroid.request(
+                        PermissionsAndroid.PERMISSIONS.NEARBY_WIFI_DEVICES
+                    ).then(result => {
+                        if (result) {
+                            console.log('User accept')
+                        } else {
+                            console.log('User refuse')
+                        }
+                    })
+                }
+            })
+            PermissionsAndroid.check(
+                PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN
+            ).then(result => {
+                if (result) {
+                    console.log('Permission is OK')
+                } else {
+                    PermissionsAndroid.request(
+                        PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN
+                    ).then(result => {
+                        if (result) {
+                            console.log('User accept')
+                        } else {
+                            console.log('User refuse')
+                        }
+                    })
+                }
+            })
+            PermissionsAndroid.check(
+                PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT
+            ).then(result => {
+                if (result) {
+                    console.log('Permission is OK')
+                } else {
+                    PermissionsAndroid.request(
+                        PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT
+                    ).then(result => {
+                        if (result) {
+                            console.log('User accept')
+                        } else {
+                            console.log('User refuse')
+                        }
+                    })
+                }
+            })
+        }
+    }, [])
 
     return (
         <NavigationContainer>
@@ -99,13 +180,15 @@ const Navigation = () => {
 function App() {
     return (
         <AuthProvider>
-            <QueryClientProvider client={queryClient}>
-                <SafeAreaProvider>
-                    <PaperProvider theme={theme}>
-                        <Navigation />
-                    </PaperProvider>
-                </SafeAreaProvider>
-            </QueryClientProvider>
+            <BluetoothConnectionProvider>
+                <QueryClientProvider client={queryClient}>
+                    <SafeAreaProvider>
+                        <PaperProvider theme={theme}>
+                            <Navigation />
+                        </PaperProvider>
+                    </SafeAreaProvider>
+                </QueryClientProvider>
+            </BluetoothConnectionProvider>
         </AuthProvider>
     )
 }

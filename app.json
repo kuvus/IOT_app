@@ -20,12 +20,19 @@
                 "foregroundImage": "./assets/adaptive-icon.png",
                 "backgroundColor": "#ffffff"
             },
-            "permissions": ["android.permission.ACCESS_FINE_LOCATION"]
+            "permissions": [
+                "android.permission.ACCESS_FINE_LOCATION",
+                "android.permission.BLUETOOTH",
+                "android.permission.BLUETOOTH_ADMIN",
+                "android.permission.BLUETOOTH_CONNECT",
+                "android.permission.BLUETOOTH_SCAN"
+            ],
+            "package": "com.anonymous.IOT"
         },
         "web": {
             "favicon": "./assets/favicon.png"
         },
-        "plugins": ["react-native-wifi-reborn"],
+        "plugins": ["react-native-wifi-reborn", "react-native-ble-plx"],
         "scheme": "iot"
     }
 }

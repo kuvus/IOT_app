@@ -1,21 +1,36 @@
-import { View, StyleSheet } from 'react-native'
+import {
+    View,
+    StyleSheet,
+    Platform,
+    PermissionsAndroid,
+    FlatList,
+} from 'react-native'
 
 import { useNetInfo } from '@react-native-community/netinfo'
 import { useEffect, useState } from 'react'
 import * as Location from 'expo-location'
-import { Appbar, Button, Dialog, Portal, Text } from 'react-native-paper'
+import { Appbar, Button, Dialog, List, Portal, Text } from 'react-native-paper'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { StackParamList } from '../../App'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { BleManager } from 'react-native-ble-plx'
+import { useBluetoothConnection } from '../providers/BluetoothProvider'
+import Aes from 'react-native-aes-crypto'
+import { encryptData } from '../utils/aes'
 
 type Props = NativeStackScreenProps<StackParamList>
 
+// const ble = new BleManager()
+
 export default function ConnectScreen({ navigation }: Props) {
     const { type, isConnected, details } = useNetInfo()
+    const [noDevice, setNoDevice] = useState(false)
+
     //
     const [showDialog, setShowDialog] = useState(false)
 
     useEffect(() => {
+        console.log(type, details)
         if (type !== 'unknown' && !(type === 'wifi' && isConnected)) {
             setShowDialog(true)
         }
@@ -45,6 +60,19 @@ export default function ConnectScreen({ navigation }: Props) {
                         </Button>
                     </Dialog.Actions>
                 </Dialog>
+                {/*<Dialog*/}
+                {/*    visible={!state.bleReady}*/}
+                {/*    onDismiss={() => {*/}
+                {/*        setShowDialog(false)*/}
+                {/*    }}>*/}
+                {/*    <Dialog.Title>Połączenie z urządzeniem</Dialog.Title>*/}
+                {/*    <Dialog.Content>*/}
+                {/*        <Text variant='bodyMedium'>*/}
+                {/*            Aby kontynuować konfigurację urządzenia, włącz*/}
+                {/*            bluetooth.*/}
+                {/*        </Text>*/}
+                {/*    </Dialog.Content>*/}
+                {/*</Dialog>*/}
             </Portal>
 
             <Appbar.Header elevated={true} mode={'center-aligned'}>
@@ -81,6 +109,50 @@ export default function ConnectScreen({ navigation }: Props) {
                     mode='contained'>
                     Dalej
                 </Button>
+
+                {/*<FlatList*/}
+                {/*    data={state.items}*/}
+                {/*    renderItem={item => {*/}
+                {/*        return (*/}
+                {/*            <List.Item*/}
+                {/*                title={item.item.name}*/}
+                {/*                description={item.item.id}*/}
+                {/*            />*/}
+                {/*        )*/}
+                {/*    }}*/}
+                {/*/>*/}
+                {/*{state.isScanning ? (*/}
+                {/*    <View>*/}
+                {/*        <Text*/}
+                {/*            variant={'titleLarge'}*/}
+                {/*            style={{ textAlign: 'center' }}>*/}
+                {/*            Wyszukiwanie czujnika...*/}
+                {/*        </Text>*/}
+                {/*        <Text style={{ textAlign: 'center' }}>*/}
+                {/*            Upewnij się, że czujnik jest włączony i znajduje się*/}
+                {/*            w zasięgu bluetooth.*/}
+                {/*        </Text>*/}
+                {/*    </View>*/}
+                {/*) : (*/}
+                {/*    <View>*/}
+                {/*        <Text*/}
+                {/*            variant={'titleLarge'}*/}
+                {/*            style={{ textAlign: 'center' }}>*/}
+                {/*            Nie znaleziono czujnika*/}
+                {/*        </Text>*/}
+                {/*        <Text style={{ textAlign: 'center' }}>*/}
+                {/*            Upewnij się, że czujnik jest włączony i znajduje się*/}
+                {/*            w zasięgu bluetooth.*/}
+                {/*        </Text>*/}
+                {/*        <Button*/}
+                {/*            onPress={() => {*/}
+                {/*                rescan()*/}
+                {/*            }}*/}
+                {/*            mode='contained'>*/}
+                {/*            Przeskanuj ponownie*/}
+                {/*        </Button>*/}
+                {/*    </View>*/}
+                {/*)}*/}
             </View>
         </View>
     )
