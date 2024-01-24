@@ -25,6 +25,7 @@ type Props = NativeStackScreenProps<StackParamList>
 export default function ConnectScreen({ navigation }: Props) {
     const { type, isConnected, details } = useNetInfo()
     const [noDevice, setNoDevice] = useState(false)
+    const [connected, setConnected] = useState(true) // TODO: zmienić na false
 
     //
     const [showDialog, setShowDialog] = useState(false)
@@ -33,6 +34,11 @@ export default function ConnectScreen({ navigation }: Props) {
         console.log(type, details)
         if (type !== 'unknown' && !(type === 'wifi' && isConnected)) {
             setShowDialog(true)
+        } else if (type === 'wifi' && isConnected) {
+            setShowDialog(false)
+            if (details?.ssid === 'sensor') {
+                setConnected(true)
+            }
         }
     }, [type, details])
 
@@ -60,19 +66,6 @@ export default function ConnectScreen({ navigation }: Props) {
                         </Button>
                     </Dialog.Actions>
                 </Dialog>
-                {/*<Dialog*/}
-                {/*    visible={!state.bleReady}*/}
-                {/*    onDismiss={() => {*/}
-                {/*        setShowDialog(false)*/}
-                {/*    }}>*/}
-                {/*    <Dialog.Title>Połączenie z urządzeniem</Dialog.Title>*/}
-                {/*    <Dialog.Content>*/}
-                {/*        <Text variant='bodyMedium'>*/}
-                {/*            Aby kontynuować konfigurację urządzenia, włącz*/}
-                {/*            bluetooth.*/}
-                {/*        </Text>*/}
-                {/*    </Dialog.Content>*/}
-                {/*</Dialog>*/}
             </Portal>
 
             <Appbar.Header elevated={true} mode={'center-aligned'}>
@@ -97,7 +90,7 @@ export default function ConnectScreen({ navigation }: Props) {
                         <Text
                             style={{ textAlign: 'center' }}
                             variant={'titleMedium'}>
-                            Nazwa sieci: czujnik1
+                            Nazwa sieci: sensor
                         </Text>
                         <Text style={{ textAlign: 'center' }}>
                             Po połączeniu przejdź do kolejnego kroku.
@@ -106,7 +99,8 @@ export default function ConnectScreen({ navigation }: Props) {
                 </View>
                 <Button
                     onPress={() => navigation.navigate('Wifi')}
-                    mode='contained'>
+                    mode='contained'
+                    disabled={!connected}>
                     Dalej
                 </Button>
 

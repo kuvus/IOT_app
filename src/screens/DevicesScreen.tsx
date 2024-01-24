@@ -7,7 +7,7 @@ import {
 } from 'react-native'
 import SensorListing from '../components/SensorListing'
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
-import { Appbar, Text } from 'react-native-paper'
+import { Appbar, Text, TouchableRipple } from 'react-native-paper'
 import { Sensor } from '../models/sensor.type'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { StackParamList } from '../../App'
@@ -92,14 +92,14 @@ export default function DevicesScreen({ navigation }: Props) {
                             console.log(item)
                             // return <Text>{item.name}</Text>
                             return (
-                                <TouchableHighlight
+                                <TouchableRipple
                                     onPress={() =>
                                         navigation.navigate('Sensor', {
                                             device: item,
                                         })
                                     }>
                                     <SensorListing sensor={item} />
-                                </TouchableHighlight>
+                                </TouchableRipple>
                             )
                         }}
                         keyExtractor={item => item.id.toString()}

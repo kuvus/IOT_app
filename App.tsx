@@ -16,8 +16,9 @@ import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
 import { Device } from './src/models/device.type'
 import SensorScreen from './src/screens/SensorScreen'
-import { PermissionsAndroid, Platform } from 'react-native'
+import { PermissionsAndroid, Platform, StatusBar } from 'react-native'
 import { BluetoothConnectionProvider } from './src/providers/BluetoothProvider'
+import type { StatusBarStyle } from 'react-native'
 
 const queryClient = new QueryClient()
 
@@ -117,6 +118,7 @@ const Navigation = () => {
 
     return (
         <NavigationContainer>
+            <StatusBar barStyle='dark-content' />
             <Stack.Navigator>
                 {authState?.authenticated ? (
                     <>

@@ -147,6 +147,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 authenticated: true,
             })
 
+            axios.defaults.headers.common['Authorization'] =
+                `Bearer ${response.data.access_token}`
+
             return response
         } catch (error) {
             return {

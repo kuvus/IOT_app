@@ -1,6 +1,20 @@
-import { View, FlatList } from 'react-native'
+import {
+    View,
+    FlatList,
+    RefreshControl,
+    TouchableHighlight,
+} from 'react-native'
 import { useNetInfo } from '@react-native-community/netinfo'
-import { Appbar, Button, List, TextInput, Text } from 'react-native-paper'
+import {
+    Appbar,
+    Button,
+    List,
+    TextInput,
+    Text,
+    Dialog,
+    Portal,
+    TouchableRipple,
+} from 'react-native-paper'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { StackParamList } from '../../App'
 import { useEffect, useState } from 'react'
@@ -9,6 +23,7 @@ import { Characteristic } from 'react-native-ble-plx'
 import WifiManager from 'react-native-wifi-reborn'
 import { encryptData } from '../utils/aes'
 import { useAuth } from '../providers/AuthProvider'
+import axios from 'axios'
 
 type Props = NativeStackScreenProps<StackParamList>
 
@@ -21,16 +36,23 @@ export default function WifiScreen({ navigation }: Props) {
     const [wifiList, setWifiList] = useState<WifiManager.WifiEntry[]>([])
     const [display, setDisplay] = useState<'ssid' | 'password'>('ssid')
     const [refreshList, setRefreshList] = useState(false)
+    const [showDialog, setShowDialog] = useState(false)
+    const [isFetching, setIsFetching] = useState(false)
+
+    const { type, isConnected, details } = useNetInfo()
 
     const { authState } = useAuth()
 
     const loadWifiList = async () => {
         console.log('loading wifi list')
+        setIsFetching(true)
         try {
             const list = await WifiManager.reScanAndLoadWifiList()
             setWifiList(list)
         } catch (error) {
             console.log(error)
+        } finally {
+            setIsFetching(false)
         }
     }
 
@@ -53,7 +75,22 @@ export default function WifiScreen({ navigation }: Props) {
 
         const encrypted = await encryptData(JSON.stringify(test))
 
-        //     TODO: wysłanie requestem do urządzenia
+        const address = 'http://192.168.4.1'
+
+        const config = {
+            headers: {
+                'Content-Type': 'text/plain', // Set the Content-Type header to text/plain
+            },
+            timeout: 0,
+        }
+
+        try {
+            const response = await axios.post(`${address}`, encrypted, config)
+        } catch (e) {
+            console.log(e)
+        }
+
+        //     TODO: sprawdzenie po czasie, bo urządzenie nie odpowie
     }
 
     useEffect(() => {
@@ -68,8 +105,42 @@ export default function WifiScreen({ navigation }: Props) {
         loadWifiList()
     }, [refreshList])
 
+    useEffect(() => {
+        if (type !== 'unknown' && !(type === 'wifi' && isConnected)) {
+            setShowDialog(true)
+        } else if (type === 'wifi' && isConnected) {
+            setShowDialog(false)
+            if (details?.ssid === 'sensor') {
+                setShowDialog(false)
+            }
+        }
+    }, [type, details])
+
     return (
         <View>
+            <Portal>
+                <Dialog
+                    visible={showDialog}
+                    onDismiss={() => {
+                        setShowDialog(false)
+                    }}>
+                    <Dialog.Title>Połączenie z urządzeniem</Dialog.Title>
+                    <Dialog.Content>
+                        <Text variant='bodyMedium'>
+                            Aby kontynuować konfigurację urządzenia, włącz WIFI
+                            i połącz się z siecią urządzenia (sensor).
+                        </Text>
+                    </Dialog.Content>
+                    <Dialog.Actions>
+                        <Button
+                            onPress={() => {
+                                setShowDialog(false)
+                            }}>
+                            Ok
+                        </Button>
+                    </Dialog.Actions>
+                </Dialog>
+            </Portal>
             <Appbar.Header elevated={true} mode={'center-aligned'}>
                 <Appbar.BackAction
                     onPress={() => {
@@ -79,33 +150,40 @@ export default function WifiScreen({ navigation }: Props) {
                 <Appbar.Content title='Wybierz sieć WiFi' />
             </Appbar.Header>
             <View style={{ padding: 16, rowGap: 24 }}>
-                {display === 'ssid' && wifiList.length > 0 && (
+                {display === 'ssid' && wifiList.length > 0 ? (
                     <View style={{ rowGap: 16 }}>
                         <Text
                             style={{ textAlign: 'center' }}
                             variant={'titleLarge'}>
-                            Wybierz sieć wifi z listy
+                            Wybierz sieć WiFi z listy
                         </Text>
                         <FlatList
                             data={ssidList}
                             contentContainerStyle={{ gap: 4 }}
                             renderItem={item => {
                                 return (
-                                    <Text
+                                    <TouchableRipple
                                         style={{
                                             borderStyle: 'solid',
                                             borderWidth: 1,
                                             borderRadius: 8,
                                             padding: 16,
                                         }}
-                                        variant={'bodyMedium'}
                                         onPress={() => {
                                             selectWifi(item.item)
                                         }}>
-                                        {item.item}
-                                    </Text>
+                                        <Text variant={'bodyMedium'}>
+                                            {item.item}
+                                        </Text>
+                                    </TouchableRipple>
                                 )
                             }}
+                            refreshControl={
+                                <RefreshControl
+                                    refreshing={isFetching}
+                                    onRefresh={() => setRefreshList(p => !p)}
+                                />
+                            }
                         />
                         <Button
                             mode={'contained'}
@@ -113,6 +191,8 @@ export default function WifiScreen({ navigation }: Props) {
                             Odśwież listę
                         </Button>
                     </View>
+                ) : (
+                    <Text variant={'titleLarge'}>Ładowanie listy sieci...</Text>
                 )}
                 {display === 'password' && (
                     <View style={{ rowGap: 4 }}>

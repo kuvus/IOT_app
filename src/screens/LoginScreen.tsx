@@ -22,6 +22,7 @@ export default function LoginScreen({ navigation }: Props) {
         if (result) {
             setLoading(false)
             if (result.error) {
+                console.log('err', result.message)
                 if (result.message.response.status < 500) {
                     console.log('c', result.message.response.data)
                     if (typeof result.message.response.data.detail === 'string')
