@@ -1,3 +1,5 @@
+import WaitScreen from './src/screens/WaitScreen'
+
 global.Buffer = require('buffer').Buffer
 import { createContext, useContext, useEffect } from 'react'
 import { NavigationContainer } from '@react-navigation/native'
@@ -17,7 +19,6 @@ import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
 import { Device } from './src/models/device.type'
 import SensorScreen from './src/screens/SensorScreen'
 import { PermissionsAndroid, Platform, StatusBar } from 'react-native'
-import { BluetoothConnectionProvider } from './src/providers/BluetoothProvider'
 import type { StatusBarStyle } from 'react-native'
 
 const queryClient = new QueryClient()
@@ -31,6 +32,7 @@ export type StackParamList = {
     Connect: undefined
     Devices: undefined
     Sensor: { device: Device } | undefined
+    Wait: { device: Device } | undefined
 }
 
 const Stack = createNativeStackNavigator<StackParamList>()
@@ -154,6 +156,14 @@ const Navigation = () => {
                                 headerShown: false,
                             }}
                         />
+                        <Stack.Screen
+                            name='Wait'
+                            component={WaitScreen}
+                            options={{
+                                title: 'Wybierz sieć WiFi',
+                                headerShown: false,
+                            }}
+                        />
                     </>
                 ) : (
                     <>
@@ -182,15 +192,13 @@ const Navigation = () => {
 function App() {
     return (
         <AuthProvider>
-            <BluetoothConnectionProvider>
-                <QueryClientProvider client={queryClient}>
-                    <SafeAreaProvider>
-                        <PaperProvider theme={theme}>
-                            <Navigation />
-                        </PaperProvider>
-                    </SafeAreaProvider>
-                </QueryClientProvider>
-            </BluetoothConnectionProvider>
+            <QueryClientProvider client={queryClient}>
+                <SafeAreaProvider>
+                    <PaperProvider theme={theme}>
+                        <Navigation />
+                    </PaperProvider>
+                </SafeAreaProvider>
+            </QueryClientProvider>
         </AuthProvider>
     )
 }

@@ -14,7 +14,6 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { StackParamList } from '../../App'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { BleManager } from 'react-native-ble-plx'
-import { useBluetoothConnection } from '../providers/BluetoothProvider'
 import Aes from 'react-native-aes-crypto'
 import { encryptData } from '../utils/aes'
 
@@ -25,7 +24,7 @@ type Props = NativeStackScreenProps<StackParamList>
 export default function ConnectScreen({ navigation }: Props) {
     const { type, isConnected, details } = useNetInfo()
     const [noDevice, setNoDevice] = useState(false)
-    const [connected, setConnected] = useState(true) // TODO: zmienić na false
+    const [connected, setConnected] = useState(false)
 
     //
     const [showDialog, setShowDialog] = useState(false)

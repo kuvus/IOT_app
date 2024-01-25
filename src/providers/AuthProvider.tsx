@@ -3,6 +3,9 @@ import { AxiosResponse } from 'axios'
 import axios from '../utils/axios'
 import * as SecureStore from 'expo-secure-store'
 import config from '../../apiConfig.json'
+import { checkIfTokenIsValid } from '../utils/jwt'
+import axiosClean from 'axios'
+import axiosClient from '../utils/axios'
 
 type AuthState = {
     token: string | null
@@ -33,6 +36,10 @@ type SignupResponse = {
     email: string
 }
 
+const cleanClient = axiosClean.create({
+    baseURL: config.apiUrl,
+})
+
 const ACC_TOKEN_KEY = config.accessTokenKey
 const REF_TOKEN_KEY = config.refreshTokenKey
 
@@ -56,8 +63,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                     refreshToken: refreshToken,
                     authenticated: true,
                 })
-                axios.defaults.headers.common['Authorization'] =
-                    `Bearer ${accessToken}`
+                // axios.defaults.headers.common['Authorization'] =
+                //     `Bearer ${accessToken}`
             }
         }
         loadTokens()
@@ -112,8 +119,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 authenticated: true,
             })
 
-            axios.defaults.headers.common['Authorization'] =
-                `Bearer ${response.data.access_token}`
+            // axios.defaults.headers.common['Authorization'] =
+            //     `Bearer ${response.data.access_token}`
 
             return response
         } catch (error) {
@@ -125,38 +132,31 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     const onRefreshToken = async () => {
-        try {
-            const refreshToken = await SecureStore.getItemAsync(REF_TOKEN_KEY)
-            const response: AxiosResponse<LoginResponse> = await axios.post(
-                `auth/token/refresh`,
-                {
-                    refresh_token: refreshToken,
-                }
-            )
-            await SecureStore.setItemAsync(
-                ACC_TOKEN_KEY,
-                response.data.access_token
-            )
-            await SecureStore.setItemAsync(
-                REF_TOKEN_KEY,
-                response.data.refresh_token
-            )
-            setAuthState({
-                token: response.data.access_token,
-                refreshToken: response.data.refresh_token,
-                authenticated: true,
-            })
-
-            axios.defaults.headers.common['Authorization'] =
-                `Bearer ${response.data.access_token}`
-
-            return response
-        } catch (error) {
-            return {
-                error: true,
-                message: error,
+        const refreshToken = await SecureStore.getItemAsync(REF_TOKEN_KEY)
+        const response: AxiosResponse<LoginResponse> = await axios.post(
+            `auth/token/refresh`,
+            {
+                refresh_token: refreshToken,
             }
-        }
+        )
+        await SecureStore.setItemAsync(
+            ACC_TOKEN_KEY,
+            response.data.access_token
+        )
+        await SecureStore.setItemAsync(
+            REF_TOKEN_KEY,
+            response.data.refresh_token
+        )
+        setAuthState({
+            token: response.data.access_token,
+            refreshToken: response.data.refresh_token,
+            authenticated: true,
+        })
+
+        // axios.defaults.headers.common['Authorization'] =
+        //     `Bearer ${response.data.access_token}`
+
+        return response
     }
 
     const onLogout = async () => {
@@ -170,33 +170,46 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 authenticated: false,
             })
 
-            axios.defaults.headers.common['Authorization'] = ''
+            // axios.defaults.headers.common['Authorization'] = ''
         } catch (error) {
             console.log(error)
         }
     }
 
-    // TODO: sprawdzić czy działa
-    axios.interceptors.response.use(
-        response => {
-            return response
-        },
-        async error => {
-            const originalRequest = error.config
-            const errMessage = error.response.data.detail as string
-            if (
-                errMessage.includes('Not authenticated') &&
-                !originalRequest._retry
-            ) {
-                originalRequest._retry = true
+    axios.interceptors.request.use(async config => {
+        if (authState.authenticated)
+            try {
+                const accessToken =
+                    await SecureStore.getItemAsync(ACC_TOKEN_KEY)
+                const refreshToken =
+                    await SecureStore.getItemAsync(REF_TOKEN_KEY)
 
-                await onRefreshToken()
-
-                return axios(originalRequest)
+                if (accessToken) {
+                    const valid = await checkIfTokenIsValid(accessToken)
+                    if (!valid) {
+                        if (refreshToken) {
+                            console.log('refreshing token')
+                            const data = await onRefreshToken()
+                            if (data && data.data)
+                                config.headers.Authorization = `Bearer ${data.data.access_token}`
+                            else {
+                                await onLogout()
+                            }
+                        } else {
+                            await onLogout()
+                        }
+                    } else {
+                        config.headers.Authorization = accessToken
+                            ? `Bearer ${accessToken}`
+                            : ''
+                    }
+                }
+            } catch (e) {
+                console.log(e)
             }
-            return Promise.reject(error)
-        }
-    )
+
+        return config
+    })
 
     const value = {
         authState,
